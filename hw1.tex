@@ -310,6 +310,43 @@ The grading is defined in the accompanying rubric file.
   \titledquestion{Amortized Analysis}
   Consider an \pyth{ArrayStack} implementation of the \pyth{List} interface with a slightly altered \pyth{resize()} operation. Instead of reserving space for $2n$ elements in the new array, it reserves space for $n + \lceil \frac{n}{4} \rceil$ elements. Prove that the \pyth{append()} operation still takes $O(1)$ time in the amortized sense.
   \begin{solution}
+  Traditional \pyth{resize()} where the length of the array doubles when the array is full works by allocating an array $b$ of size $ 2n $, and copies the $n$ elements of the original array $a$ into the new array $b$ and then sets $a$ to $b$. Therefore, $a$ has length of $2n$ now. This takes $O(n)$ time where the \pyth{append()} operation takes $ O(1) $ time.
+
+    If the new \pyth{resize()} operation reserves space for $ n + [\frac{n}{4}] $ elements, then the \pyth{append()} operation would still take $O(1)$ time in the amortized sense.
+    
+    This can be undertood better by first understanding the cost of \pyth{append()} for when \pyth{resize()} reserves space for $2n$ elements; 
+
+    \subsection*{Resize of $2n$:}
+    Consider an array of size 1. The cost of appending an element would be $ O(1) $ [$n = 1$]. \\ Now for the second \pyth{append()}, resize would be called, and then the total cost of appending the second element would be $O(2)$[$n = 2$]. \\ For the third \pyth{append()}, \pyth{resize()} would again be called and the total cost would be $O(3)$[$n = 3$]. \\ 
+    For the fourth \pyth{append()}, \pyth{resize()} won't be called as the array is not full, and only the cost of \pyth{append()} is taken into account, therefore the total cost is $O(4)$, however, this takes into account traversal cost as well, and the cost of \pyth{append()} remains $ O(1) $. \\ With the next \pyth{append()} operation[$n = 5$], a new array will be created with space reserved for 8 elements. Then the total cost of appending all elements into the new array is $ O(5) $, however, the individual cost of \pyth{append()} remains $O(1)$. 
+    
+    Then using the above, we can make a series such that: \\ 
+    \textit{Series} $ = 1 + (1 + 1) + (1 + 2) + 1 + (1 + 4) + 1 + 1 + 1 + (1 + 8) + \cdots $ \\ 
+    Therefore, the total cost becomes: \\ 
+    \textit{Cost} $ = 1 + 2 + 4 + 8 + \cdots $[for \pyth{resize()}] $ + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 \cdots $[for \pyth{append()}]
+
+
+    \vspace{2mm}
+    The above series for resize can be written as a geometric series where \pyth{resize()} = $ 2^{\log_2(n) - i} + 1 $. \\ Hence the total cost of \pyth{resize()} comes out to be $O(1)$ with each \pyth{append()} operation having a cost of $O(1)$.
+
+    \subsection*{Resize of $ n + \frac{n}{4} :$}
+    Then we can prove that the \pyth{append()} operation has a cost of $O(1)$ in the amortized sense. \\ 
+    The new size increase is of $ n + \frac{n}{4} \implies \frac{5n}{4} $. So space is reserved in the new array for $ \frac{5n}{4} $ elements(we will consider ceil value for decimal numbers). 
+
+    Now consider an array of size 1. The cost of appending just one element would be $ O(1) $ [n = 1]. \\ 
+    For another \pyth{append()} operation [n = 2], the total cost would be considering the cost of resize, and the cost of append. The \pyth{resize()} function would give us $ \frac{1}{4} = 0.25$. Ceil($0.25$) = 1. Therefore, the total cost becomes $ 1 + \text{ceil($\frac{n}{4}$)} = 1 + 1 = O(2)$. \\ 
+    For the third \pyth{append()} [n = 3] operation, the total cost would be considering the cost of resize, and the cost of append. The \pyth{resize()} function would give us $ \frac{2}{4} = 0.5 $. Ceil of this is equal to 1. Therefore the total cost would be $ 1 + 1 + 1 = O(3) $. \\ 
+    For the fourth \pyth{append()} operation, the same takes place. \\ 
+    For the fifth \pyth{append()} operation, \pyth{resize()} reserves space for 2 elements, as \pyth{resize()} gives us $ \frac{5}{4} = 1.25 $, and the ceil of this is 2. Therefore, space is reserved for two elements. Therefore, the following \pyth{append()} operation would cost $ O(1) $.
+
+    Then using the above, we can make a series such that: \\ 
+    \textit{Series} = $ 1 + (1 + 1) + (1 + 2) + (1 + 3) + (1 + 4) + (1 + 5) + 1 + (1 + 7) + \cdots $ \\ 
+    Therefore, the total cost becomes: \\ 
+    \textit{Cost} = $ 1 + 2 + 3 + 4 + 5 + 7 + \cdots $[for \pyth{resize()}] $ + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + \cdots $[for \pyth{append()}]
+
+    Then the series can be written as a geometric series where \pyth{resize()} $ = n + \displaystyle\frac{5^{\log\frac{5n}{4} + 1}}{4} \implies O(n) $ as n gets larger. 
+
+    Then the cost of appending one element is $ \frac{O(n)}{n} = O(1) $. Hence proved that the \pyth{append()} operation still takes $ O(1) $ time in the amortized sense.
 
   \end{solution}
 
